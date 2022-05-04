@@ -30,7 +30,7 @@ class UpdatePasswordList {
         String line;
         while ((line = bufferedReader.readLine()) != null) {
             /* Validate password list */
-            if (line.length() < 8)
+            if (line.length() > 7)
                 passwordList.add(line);
 
             fileSize++;

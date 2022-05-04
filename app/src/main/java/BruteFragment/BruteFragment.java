@@ -40,7 +40,7 @@ public class BruteFragment extends Fragment {
     private WifiManager wifiManager;
 
     private static byte flagCurrentBrute = 0;
-    private int threadValue = 100;
+    private int threadValue = 3000;
 
     private String currentBruteWifiSSID = null;
 

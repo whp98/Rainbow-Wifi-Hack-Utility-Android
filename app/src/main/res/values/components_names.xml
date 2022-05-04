@@ -34,8 +34,8 @@
     <string name="BruteAll">Brute All</string>
     <string name="Brute">Brute</string>
     <string name="Brute0">Brute:</string>
-    <string name="Thread">Thread</string>
-    <string name="ThreadValue">100</string>
+    <string name="Thread">超时时间(ms)</string>
+    <string name="ThreadValue">4000</string>
 
     <!-- Test fragment -->
     <string name="Test">Test optimal thread:</string>

@@ -5,6 +5,7 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiConfiguration;
+import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -13,6 +14,7 @@ import java.util.List;
 import java.util.Objects;
 
 import androidx.fragment.app.FragmentManager;
+
 import logic.SetLog;
 
 public class BruteProcess extends AsyncTask {
@@ -35,7 +37,7 @@ public class BruteProcess extends AsyncTask {
 
     private byte flagBrute = 0;
     private static byte flagStopBrute = 0;
-
+    private String logAsync = "";
     private Bundle bundle = new Bundle();
 
     private SetLog setLog;
@@ -48,12 +50,15 @@ public class BruteProcess extends AsyncTask {
         this.passwordList = passwordList;
         this.activity = activity;
         this.threadValue = threadValue;
+        this.setLog = new SetLog(fragmentManager);
     }
 
     private void Brute() {
         for (int i = 0; i < passwordList.size(); i++) {
             if (flagBrute == 0) {
                 flagBrute = 1;
+                StringBuilder stringBuilder = new StringBuilder();
+                stringBuilder.append("当前ssid:" + currentBruteWifiSSID+" 尝试" + (i + 1) + "/" + passwordList.size() + "密码： " + passwordList.get(i) + " ");
                 wifiManager.removeNetwork(netId);
                 /* Config */
                 WifiGeneratedConfig(i);
@@ -61,6 +66,7 @@ public class BruteProcess extends AsyncTask {
                 TryConnect();
                 /* Thread */
                 SleepAfter();
+                logAsync = stringBuilder.toString();
                 publishProgress(i);
                 /* Success brute */
                 if (CheckSuccessConnect()) {
@@ -92,7 +98,7 @@ public class BruteProcess extends AsyncTask {
     /* Sleep after connect */
     private void SleepAfter() {
         try {
-            Thread.sleep(threadValue);
+            Thread.sleep(10000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -125,18 +131,23 @@ public class BruteProcess extends AsyncTask {
     @Override
     protected void onProgressUpdate(Object[] values) {
         super.onProgressUpdate(values);
-        setLog = new SetLog(fragmentManager);
         bundle.putInt("setProgressBar", Integer.parseInt(values[0].toString()));
         fragmentManager.setFragmentResult("setProgressBar", bundle);
         setLog.SetLogCurrentProgress("Brute progress " + values[0].toString() + " with < " + passwordList.size() + " passwords \n");
+        setLog.SetLogResult(logAsync);
     }
 
     /* Check success connection */
     private boolean CheckSuccessConnect() {
         ConnectivityManager connectivityManager = (ConnectivityManager) activity.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = Objects.requireNonNull(connectivityManager).getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+        WifiManager wifiMgr = (WifiManager) activity.getSystemService(Context.WIFI_SERVICE);
+        int wifiState = wifiMgr.getWifiState();
+        WifiInfo info = wifiMgr.getConnectionInfo();
+        String wifiId = info != null ? info.getSSID().substring(1, info.getSSID().length() - 1) : null;
         flagBrute = 0;
-        return Objects.requireNonNull(networkInfo).isConnected();
+        return Objects.requireNonNull(networkInfo).isConnected() ?
+                currentBruteWifiSSID.equals(wifiId) : false;
     }
 
     /* Success parse */

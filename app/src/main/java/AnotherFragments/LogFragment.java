@@ -1,18 +1,17 @@
 package AnotherFragments;
 
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentResultListener;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentResultListener;
 
 import com.linkclink.gfr.R;
 
@@ -120,6 +119,17 @@ public class LogFragment extends Fragment {
     /* Append logCat */
     private void SetLog(String logText) {
         textViewLogCat.append(logText + "\n");
+        /*只保留最后15行日志*/
+        String lines = textViewLogCat.getText().toString();
+        String[] linesArray = lines.split("\n");
+        if (linesArray.length > 5) {
+            StringBuilder stringBuilder = new StringBuilder();
+            for (int i = linesArray.length - 5; i < linesArray.length; i++) {
+                stringBuilder.append(linesArray[i]);
+                stringBuilder.append("\n");
+            }
+            textViewLogCat.setText(stringBuilder.toString());
+        }
     }
 
     /* Append log good-results */
